@@ -18,6 +18,7 @@ st.markdown(
     @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
     @keyframes progressFill { from { width: 0%; } to { width: var(--target); } }
 
+    .stAppDeployButton, button[title="Fork this app"], button[title="Deploy this app"] { display: none !important; }
     .main-title {
         background: linear-gradient(90deg, #3b82f6, #60a5fa, #3b82f6);
         background-size: 200% auto;
@@ -30,30 +31,36 @@ st.markdown(
     }
     .subtitle { animation: fadeInUp 0.6s ease-out 0.2s both; color: #aaa; }
     .risk-card {
-        border-radius: 24px;
-        padding: 2.5rem;
+        border-radius: 16px;
+        padding: 1.5rem;
         text-align: center;
         animation: fadeInUp 0.8s ease-out, glow 3s ease-in-out infinite;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
     }
-    .risk-low { background: linear-gradient(145deg, #0d2b1a, #1a1a2e); border: 1px solid rgba(34,197,94,0.3); }
-    .risk-medium { background: linear-gradient(145deg, #2b2a1a, #1a1a2e); border: 1px solid rgba(234,179,8,0.3); }
-    .risk-high { background: linear-gradient(145deg, #2b1a1a, #1a1a2e); border: 1px solid rgba(239,68,68,0.3); }
-    .risk-percent { font-size: 4rem; font-weight: 800; }
-    .risk-label { font-size: 1.1rem; margin-top: 0.5rem; }
-    .risk-badge { display: inline-block; padding: 0.4rem 1.2rem; border-radius: 30px; font-weight: 700; margin-top: 1rem; }
+    .risk-low { background: rgba(13,43,26,0.5); border: 1px solid rgba(34,197,94,0.2); }
+    .risk-medium { background: rgba(43,42,26,0.5); border: 1px solid rgba(234,179,8,0.2); }
+    .risk-high { background: rgba(43,26,26,0.5); border: 1px solid rgba(239,68,68,0.2); }
+    .risk-percent { font-size: 3rem; font-weight: 800; }
+    .risk-label { font-size: 0.9rem; margin-top: 0.25rem; }
+    .risk-badge { display: inline-block; padding: 0.3rem 1rem; border-radius: 30px; font-weight: 700; margin-top: 0.5rem; font-size: 0.85rem; }
     .metric-box {
-        background: rgba(255,255,255,0.03); border-radius: 16px; padding: 1.25rem; text-align: center;
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 12px; padding: 0.75rem; text-align: center;
         border: 1px solid rgba(255,255,255,0.05); animation: fadeInUp 0.6s ease-out both;
         transition: all 0.3s ease;
     }
-    .metric-box:hover { transform: translateY(-4px); border-color: rgba(59,130,246,0.3); }
-    .metric-value { font-size: 1.5rem; font-weight: 700; color: #3b82f6; }
-    .metric-label { font-size: 0.8rem; color: #888; margin-top: 0.25rem; }
+    .metric-box:hover { transform: translateY(-2px); border-color: rgba(59,130,246,0.2); }
+    .metric-value { font-size: 1.2rem; font-weight: 700; color: #3b82f6; }
+    .metric-label { font-size: 0.7rem; color: #888; margin-top: 0.15rem; }
     .insight-box {
-        background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.02));
-        border-radius: 16px; padding: 1.5rem;
-        border: 1px solid rgba(59,130,246,0.15);
+        background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.01));
+        border-radius: 12px; padding: 0.75rem 1rem;
+        border: 1px solid rgba(59,130,246,0.1);
         animation: fadeInUp 0.8s ease-out 0.4s both;
+        font-size: 0.85rem;
     }
     .sidebar-header {
         font-size: 1.2rem; font-weight: 700; color: #3b82f6;
@@ -73,8 +80,8 @@ st.markdown(
         box-shadow: 0 8px 30px rgba(59,130,246,0.3) !important;
     }
     .section-title {
-        font-size: 1.3rem; font-weight: 700; color: #fff;
-        margin: 1.5rem 0 1rem;
+        font-size: 1rem; font-weight: 700; color: #fff;
+        margin: 1rem 0 0.5rem;
         animation: slideIn 0.5s ease-out;
     }
     .progress-container {

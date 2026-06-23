@@ -42,6 +42,9 @@ st.markdown(
         50% { border-color: transparent; }
     }
 
+    /* Hide Streamlit Cloud toolbar buttons */
+    .stAppDeployButton, button[title="Fork this app"], button[title="Deploy this app"] { display: none !important; }
+
     .gradient-text {
         background: linear-gradient(90deg, #1DB954, #1ed760, #1DB954, #169c46);
         background-size: 200% auto;
@@ -49,52 +52,38 @@ st.markdown(
         -webkit-text-fill-color: transparent;
         background-clip: text;
         animation: shimmer 3s linear infinite;
-        font-size: 3rem;
+        font-size: 2.2rem;
         font-weight: 800;
         display: inline-block;
     }
     .subtitle {
         animation: fadeInUp 0.8s ease-out 0.2s both;
         color: #aaa;
-        font-size: 1.1rem;
-        margin-bottom: 2rem;
+        font-size: 0.95rem;
+        margin-bottom: 1.25rem;
     }
     .card {
-        background: linear-gradient(145deg, #1a1a2e, #16213e);
-        border-radius: 20px;
-        padding: 2rem;
-        border: 1px solid rgba(255,255,255,0.05);
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 1.25rem;
+        border: 1px solid rgba(255,255,255,0.06);
         animation: fadeInUp 0.8s ease-out both;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.3s ease;
         height: 100%;
-        position: relative;
-        overflow: hidden;
-    }
-    .card::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(29,185,84,0.03) 0%, transparent 70%);
-        opacity: 0;
-        transition: opacity 0.6s ease;
-    }
-    .card:hover::before {
-        opacity: 1;
     }
     .card:hover {
-        transform: translateY(-8px) scale(1.02);
-        border-color: rgba(29,185,84,0.3);
-        box-shadow: 0 20px 60px rgba(29,185,84,0.15);
+        transform: translateY(-4px);
+        border-color: rgba(29,185,84,0.2);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.3);
     }
     .card-spotify { animation-delay: 0.1s; }
     .card-hr { animation-delay: 0.3s; }
     .card-wine { animation-delay: 0.5s; }
     .card-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
         display: inline-block;
         animation: float 3s ease-in-out infinite;
     }
@@ -102,21 +91,21 @@ st.markdown(
     .card-hr .card-icon { animation-delay: 1s; }
     .card-wine .card-icon { animation-delay: 2s; }
     .card-title {
-        font-size: 1.5rem;
+        font-size: 1.15rem;
         font-weight: 700;
-        margin-bottom: 1rem;
+        margin-bottom: 0.4rem;
         color: #fff;
     }
     .card-desc {
-        color: #b0b0b0;
-        font-size: 0.95rem;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
+        color: #999;
+        font-size: 0.82rem;
+        line-height: 1.5;
+        margin-bottom: 0.75rem;
     }
     .card-features {
         color: #666;
-        font-size: 0.85rem;
-        margin-bottom: 1.5rem;
+        font-size: 0.8rem;
+        margin-bottom: 0.75rem;
     }
     .stPageLink {
         animation: pulse 2s ease-in-out infinite !important;
@@ -146,26 +135,26 @@ st.markdown(
     .tag-purple { background: rgba(139,92,246,0.15); color: #8b5cf6; }
     .stats-row {
         display: flex;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
     }
     .stat {
         background: rgba(255,255,255,0.03);
-        border-radius: 12px;
-        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        padding: 0.4rem 0.5rem;
         text-align: center;
         flex: 1;
     }
     .stat-value {
-        font-size: 1.5rem;
+        font-size: 1rem;
         font-weight: 700;
         color: #1DB954;
     }
     .stat-label {
-        font-size: 0.7rem;
+        font-size: 0.6rem;
         color: #666;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.3px;
     }
     hr {
         border-color: rgba(255,255,255,0.05) !important;
@@ -258,10 +247,8 @@ with col3:
     )
     st.page_link("pages/3_Wine_Quality.py", label="🍷 Open Wine Predictor →", use_container_width=True)
 
-st.markdown("---")
 st.markdown(
-    '<div class="footer">Built with ❤️ using Streamlit & scikit-learn · '
-    '<a href="https://www.kaggle.com/" style="color:#1DB954;">Kaggle</a> · '
-    '<a href="https://github.com/ayushdixit1-av/kaggle-prediction-apps" style="color:#1DB954;">GitHub</a></div>',
+    '<div class="footer">🤖 Built with Streamlit & scikit-learn · '
+    '<a href="https://www.kaggle.com/" style="color:#1DB954;text-decoration:none;">Kaggle</a></div>',
     unsafe_allow_html=True,
 )

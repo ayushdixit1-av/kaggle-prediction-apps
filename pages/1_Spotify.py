@@ -20,6 +20,7 @@ st.markdown(
     @keyframes glow { 0%,100% { box-shadow: 0 0 20px rgba(29,185,84,0.2); } 50% { box-shadow: 0 0 40px rgba(29,185,84,0.4); } }
     @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
+    .stAppDeployButton, button[title="Fork this app"], button[title="Deploy this app"] { display: none !important; }
     .main-title {
         background: linear-gradient(90deg, #1DB954, #1ed760, #1DB954);
         background-size: 200% auto;
@@ -32,38 +33,43 @@ st.markdown(
     }
     .subtitle { animation: fadeInUp 0.6s ease-out 0.2s both; color: #aaa; }
     .result-card {
-        background: linear-gradient(145deg, #0d2b1a, #1a1a2e);
-        border-radius: 20px;
-        padding: 2rem;
-        border: 1px solid rgba(29,185,84,0.2);
+        background: rgba(13,43,26,0.5);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-radius: 16px;
+        padding: 1.25rem;
+        border: 1px solid rgba(29,185,84,0.15);
         animation: fadeInUp 0.8s ease-out, glow 3s ease-in-out infinite;
         text-align: center;
     }
     .result-number {
-        font-size: 3.5rem;
+        font-size: 2.5rem;
         font-weight: 800;
         color: #1DB954;
         animation: countUp 1s ease-out;
     }
-    .result-label { color: #aaa; font-size: 1rem; margin-top: 0.5rem; }
+    .result-label { color: #aaa; font-size: 0.85rem; margin-top: 0.25rem; }
     .metric-box {
         background: rgba(255,255,255,0.03);
-        border-radius: 16px;
-        padding: 1.25rem;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 12px;
+        padding: 0.75rem;
         text-align: center;
         border: 1px solid rgba(255,255,255,0.05);
         animation: fadeInUp 0.6s ease-out both;
         transition: all 0.3s ease;
     }
-    .metric-box:hover { transform: translateY(-4px); border-color: rgba(29,185,84,0.3); }
-    .metric-value { font-size: 1.5rem; font-weight: 700; color: #1DB954; }
-    .metric-label { font-size: 0.8rem; color: #888; margin-top: 0.25rem; }
+    .metric-box:hover { transform: translateY(-2px); border-color: rgba(29,185,84,0.2); }
+    .metric-value { font-size: 1.2rem; font-weight: 700; color: #1DB954; }
+    .metric-label { font-size: 0.7rem; color: #888; margin-top: 0.15rem; }
     .insight-box {
-        background: linear-gradient(135deg, rgba(29,185,84,0.1), rgba(29,185,84,0.02));
-        border-radius: 16px;
-        padding: 1.5rem;
-        border: 1px solid rgba(29,185,84,0.15);
+        background: linear-gradient(135deg, rgba(29,185,84,0.08), rgba(29,185,84,0.01));
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(29,185,84,0.1);
         animation: fadeInUp 0.8s ease-out 0.4s both;
+        font-size: 0.85rem;
     }
     .sidebar-header {
         font-size: 1.2rem;
@@ -87,10 +93,10 @@ st.markdown(
         box-shadow: 0 8px 30px rgba(29,185,84,0.3) !important;
     }
     .section-title {
-        font-size: 1.3rem;
+        font-size: 1rem;
         font-weight: 700;
         color: #fff;
-        margin: 1.5rem 0 1rem;
+        margin: 1rem 0 0.5rem;
         animation: slideIn 0.5s ease-out;
     }
     .stMetric { animation: fadeInUp 0.6s ease-out both; }

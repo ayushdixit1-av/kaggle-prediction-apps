@@ -18,6 +18,7 @@ st.markdown(
     @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
     @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
 
+    .stAppDeployButton, button[title="Fork this app"], button[title="Deploy this app"] { display: none !important; }
     .main-title {
         background: linear-gradient(90deg, #8b5cf6, #a78bfa, #8b5cf6);
         background-size: 200% auto;
@@ -30,34 +31,40 @@ st.markdown(
     }
     .subtitle { animation: fadeInUp 0.6s ease-out 0.2s both; color: #aaa; }
     .score-card {
-        background: linear-gradient(145deg, #1a1a2e, #2b1a3a);
-        border-radius: 24px;
-        padding: 2.5rem;
+        background: rgba(26,26,46,0.5);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-radius: 16px;
+        padding: 1.25rem;
         text-align: center;
-        border: 1px solid rgba(139,92,246,0.2);
+        border: 1px solid rgba(139,92,246,0.15);
         animation: fadeInUp 0.8s ease-out, glow 3s ease-in-out infinite;
     }
     .score-number {
-        font-size: 4rem;
+        font-size: 2.5rem;
         font-weight: 800;
         color: #ffd700;
         animation: fadeInUp 0.8s ease-out;
     }
-    .score-label { color: #aaa; font-size: 1.1rem; margin-top: 0.5rem; }
-    .score-stars { font-size: 2rem; margin-top: 0.5rem; animation: fadeInUp 0.8s ease-out 0.3s both; }
+    .score-label { color: #aaa; font-size: 0.85rem; margin-top: 0.25rem; }
+    .score-stars { font-size: 1.5rem; margin-top: 0.25rem; animation: fadeInUp 0.8s ease-out 0.3s both; }
     .metric-box {
-        background: rgba(255,255,255,0.03); border-radius: 16px; padding: 1.25rem; text-align: center;
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 12px; padding: 0.75rem; text-align: center;
         border: 1px solid rgba(255,255,255,0.05); animation: fadeInUp 0.6s ease-out both;
         transition: all 0.3s ease;
     }
-    .metric-box:hover { transform: translateY(-4px); border-color: rgba(139,92,246,0.3); }
-    .metric-value { font-size: 1.5rem; font-weight: 700; color: #8b5cf6; }
-    .metric-label { font-size: 0.8rem; color: #888; margin-top: 0.25rem; }
+    .metric-box:hover { transform: translateY(-2px); border-color: rgba(139,92,246,0.2); }
+    .metric-value { font-size: 1.2rem; font-weight: 700; color: #8b5cf6; }
+    .metric-label { font-size: 0.7rem; color: #888; margin-top: 0.15rem; }
     .insight-box {
-        background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.02));
-        border-radius: 16px; padding: 1.5rem;
-        border: 1px solid rgba(139,92,246,0.15);
+        background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(139,92,246,0.01));
+        border-radius: 12px; padding: 0.75rem 1rem;
+        border: 1px solid rgba(139,92,246,0.1);
         animation: fadeInUp 0.8s ease-out 0.4s both;
+        font-size: 0.85rem;
     }
     .sidebar-header {
         font-size: 1.2rem; font-weight: 700; color: #8b5cf6;
@@ -77,15 +84,15 @@ st.markdown(
         box-shadow: 0 8px 30px rgba(139,92,246,0.3) !important;
     }
     .section-title {
-        font-size: 1.3rem; font-weight: 700; color: #fff;
-        margin: 1.5rem 0 1rem;
+        font-size: 1rem; font-weight: 700; color: #fff;
+        margin: 1rem 0 0.5rem;
         animation: slideIn 0.5s ease-out;
     }
     .wine-icon {
-        font-size: 4rem;
+        font-size: 2.5rem;
         animation: float 3s ease-in-out infinite;
         text-align: center;
-        margin: 0.5rem 0;
+        margin: 0.25rem 0;
     }
     .input-group {
         background: rgba(255,255,255,0.02);
