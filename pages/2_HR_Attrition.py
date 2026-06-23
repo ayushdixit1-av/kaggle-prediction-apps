@@ -84,6 +84,33 @@ st.markdown(
         height: 100%; border-radius: 20px;
         transition: width 1.5s ease-out;
     }
+    .input-group {
+        background: rgba(255,255,255,0.02);
+        border-radius: 12px;
+        padding: 0.75rem 0.75rem 0.25rem;
+        margin-bottom: 0.75rem;
+        border-left: 3px solid rgba(59,130,246,0.3);
+    }
+    .input-group-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #3b82f6;
+        margin-bottom: 0.5rem;
+        padding-left: 0.25rem;
+    }
+    .sidebar-info {
+        font-size: 0.75rem;
+        color: #666;
+        text-align: center;
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .stSidebar label { font-size: 0.85rem !important; font-weight: 500 !important; }
+    .stSidebar .stSlider { padding-bottom: 0.25rem; }
+    .stSidebar .stSelectbox { padding-bottom: 0.25rem; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -140,38 +167,81 @@ df = load_hr_data()
 with st.spinner("👥 Training model..."):
     model, scaler, le_dict, feature_cols, num_cols, cat_cols = train_hr_model(df)
 
-st.sidebar.markdown('<div class="sidebar-header">👤 Employee Profile</div>', unsafe_allow_html=True)
+if "hr_reset_key" not in st.session_state:
+    st.session_state.hr_reset_key = 0
 
-age = st.sidebar.slider("Age", 18, 60, 32)
-monthly_income = st.sidebar.slider("Monthly Income ($)", 1000, 20000, 5000, step=500)
-years_at_company = st.sidebar.slider("Years at Company", 0, 40, 5)
-distance_from_home = st.sidebar.slider("Distance from Home (km)", 1, 30, 10)
-overtime = st.sidebar.selectbox("Overtime", ["No", "Yes"])
-job_role = st.sidebar.selectbox("Job Role", sorted(df["JobRole"].unique()))
-job_satisfaction = st.sidebar.selectbox("Job Satisfaction (1-4)", [1, 2, 3, 4])
-work_life_balance = st.sidebar.selectbox("Work-Life Balance (1-4)", [1, 2, 3, 4])
-environment_satisfaction = st.sidebar.selectbox("Environment Satisfaction (1-4)", [1, 2, 3, 4])
-marital_status = st.sidebar.selectbox("Marital Status", ["Single", "Married", "Divorced"])
-education_field = st.sidebar.selectbox("Education Field", sorted(df["EducationField"].unique()))
-department = st.sidebar.selectbox("Department", sorted(df["Department"].unique()))
-business_travel = st.sidebar.selectbox("Business Travel", ["Non-Travel", "Travel_Rarely", "Travel_Frequently"])
-total_working_years = st.sidebar.slider("Total Working Years", 0, 40, 10)
-years_in_current_role = st.sidebar.slider("Years in Current Role", 0, 20, 3)
-num_companies_worked = st.sidebar.slider("Companies Worked At", 0, 10, 2)
+rk = st.session_state.hr_reset_key
 
+hr_groups = [
+    ("👤 Personal", [
+        ("age", lambda k: st.sidebar.slider("🎂 Age", 18, 60, 32, key=f"hr_a_{k}")),
+        ("marital_status", lambda k: st.sidebar.selectbox("💍 Marital Status", ["Single", "Married", "Divorced"], key=f"hr_m_{k}")),
+        ("distance_from_home", lambda k: st.sidebar.slider("📍 Distance (km)", 1, 30, 10, key=f"hr_d_{k}")),
+    ]),
+    ("💼 Job", [
+        ("job_role", lambda k: st.sidebar.selectbox("📋 Job Role", sorted(df["JobRole"].unique()), key=f"hr_jr_{k}")),
+        ("department", lambda k: st.sidebar.selectbox("🏢 Department", sorted(df["Department"].unique()), key=f"hr_dp_{k}")),
+        ("education_field", lambda k: st.sidebar.selectbox("🎓 Education", sorted(df["EducationField"].unique()), key=f"hr_ef_{k}")),
+        ("overtime", lambda k: st.sidebar.selectbox("⏰ Overtime", ["No", "Yes"], key=f"hr_ot_{k}")),
+        ("business_travel", lambda k: st.sidebar.selectbox("✈️ Travel", ["Non-Travel", "Travel_Rarely", "Travel_Frequently"], key=f"hr_bt_{k}")),
+    ]),
+    ("💰 Compensation", [
+        ("monthly_income", lambda k: st.sidebar.slider("💰 Monthly Income ($)", 1000, 20000, 5000, step=500, key=f"hr_mi_{k}")),
+        ("total_working_years", lambda k: st.sidebar.slider("📅 Total Working Years", 0, 40, 10, key=f"hr_twy_{k}")),
+        ("years_at_company", lambda k: st.sidebar.slider("🏠 Years at Company", 0, 40, 5, key=f"hr_yac_{k}")),
+        ("years_in_current_role", lambda k: st.sidebar.slider("📌 Years in Current Role", 0, 20, 3, key=f"hr_ycr_{k}")),
+        ("num_companies_worked", lambda k: st.sidebar.slider("🏢 Companies Worked", 0, 10, 2, key=f"hr_ncw_{k}")),
+    ]),
+    ("⭐ Satisfaction", [
+        ("job_satisfaction", lambda k: st.sidebar.selectbox("😊 Job Satisfaction", [1, 2, 3, 4], key=f"hr_js_{k}")),
+        ("work_life_balance", lambda k: st.sidebar.selectbox("⚖️ Work-Life Balance", [1, 2, 3, 4], key=f"hr_wlb_{k}")),
+        ("environment_satisfaction", lambda k: st.sidebar.selectbox("🌿 Environment Satisfaction", [1, 2, 3, 4], key=f"hr_es_{k}")),
+    ]),
+]
+
+hr_inputs = {}
+for group_label, items in hr_groups:
+    st.sidebar.markdown(
+        f'<div class="input-group"><div class="input-group-label">{group_label}</div>',
+        unsafe_allow_html=True,
+    )
+    for name, widget_fn in items:
+        hr_inputs[name] = widget_fn(rk)
+    st.sidebar.markdown("</div>", unsafe_allow_html=True)
+
+st.sidebar.markdown("---")
+
+col_a, col_b = st.sidebar.columns(2)
 predicted = False
-if st.sidebar.button("🔮 Predict Attrition", type="primary", use_container_width=True):
-    predicted = True
+with col_a:
+    if st.button("🔮 Predict", type="primary", use_container_width=True):
+        predicted = True
+with col_b:
+    if st.button("↺ Reset", use_container_width=True):
+        st.session_state.hr_reset_key += 1
+        st.rerun()
+
+st.sidebar.markdown(
+    '<div class="sidebar-info">Fill in employee details and click Predict</div>',
+    unsafe_allow_html=True,
+)
 
 if predicted:
     input_data = {
-        "Age": age, "MonthlyIncome": monthly_income, "YearsAtCompany": years_at_company,
-        "DistanceFromHome": distance_from_home, "OverTime": overtime, "JobRole": job_role,
-        "JobSatisfaction": job_satisfaction, "WorkLifeBalance": work_life_balance,
-        "EnvironmentSatisfaction": environment_satisfaction, "MaritalStatus": marital_status,
-        "EducationField": education_field, "Department": department,
-        "BusinessTravel": business_travel, "TotalWorkingYears": total_working_years,
-        "YearsInCurrentRole": years_in_current_role, "NumCompaniesWorked": num_companies_worked,
+        "Age": hr_inputs["age"], "MonthlyIncome": hr_inputs["monthly_income"],
+        "YearsAtCompany": hr_inputs["years_at_company"],
+        "DistanceFromHome": hr_inputs["distance_from_home"],
+        "OverTime": hr_inputs["overtime"], "JobRole": hr_inputs["job_role"],
+        "JobSatisfaction": hr_inputs["job_satisfaction"],
+        "WorkLifeBalance": hr_inputs["work_life_balance"],
+        "EnvironmentSatisfaction": hr_inputs["environment_satisfaction"],
+        "MaritalStatus": hr_inputs["marital_status"],
+        "EducationField": hr_inputs["education_field"],
+        "Department": hr_inputs["department"],
+        "BusinessTravel": hr_inputs["business_travel"],
+        "TotalWorkingYears": hr_inputs["total_working_years"],
+        "YearsInCurrentRole": hr_inputs["years_in_current_role"],
+        "NumCompaniesWorked": hr_inputs["num_companies_worked"],
         "DailyRate": 800, "Education": 3, "HourlyRate": 70, "JobInvolvement": 3,
         "JobLevel": 2, "MonthlyRate": 15000, "PercentSalaryHike": 15,
         "PerformanceRating": 3, "RelationshipSatisfaction": 3, "StockOptionLevel": 1,

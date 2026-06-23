@@ -94,6 +94,32 @@ st.markdown(
         animation: slideIn 0.5s ease-out;
     }
     .stMetric { animation: fadeInUp 0.6s ease-out both; }
+    .input-group {
+        background: rgba(255,255,255,0.02);
+        border-radius: 12px;
+        padding: 0.75rem 0.75rem 0.25rem;
+        margin-bottom: 0.75rem;
+        border-left: 3px solid rgba(29,185,84,0.3);
+    }
+    .input-group-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #1DB954;
+        margin-bottom: 0.5rem;
+        padding-left: 0.25rem;
+    }
+    .sidebar-info {
+        font-size: 0.75rem;
+        color: #666;
+        text-align: center;
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .stSidebar .stSlider { padding-bottom: 0.25rem; }
+    .stSidebar label { font-size: 0.85rem !important; font-weight: 500 !important; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -148,8 +174,6 @@ df, features = load_spotify_data()
 with st.spinner("🎧 Training model..."):
     model, scaler, feat_names = train_spotify_model(df, features)
 
-st.sidebar.markdown('<div class="sidebar-header">🎛️ Song Features</div>', unsafe_allow_html=True)
-
 slider_configs = {
     "bpm": (60, 200, 120),
     "danceability": (0, 100, 65),
@@ -160,20 +184,71 @@ slider_configs = {
     "liveness": (0, 100, 15),
 }
 
-inputs = {}
-for feat, (min_v, max_v, default) in slider_configs.items():
-    if feat in feat_names:
-        inputs[feat] = st.sidebar.slider(
-            f"{feat.capitalize()}",
-            min_value=min_v,
-            max_value=max_v,
-            value=default,
-            help=f"Adjust the {feat} level",
-        )
+feature_help = {
+    "bpm": "Tempo of the song in beats per minute",
+    "danceability": "How suitable the track is for dancing (0-100)",
+    "valence": "Musical positiveness conveyed by the track (0-100)",
+    "energy": "Perceptual measure of intensity and activity (0-100)",
+    "acousticness": "Confidence that the track is acoustic (0-100)",
+    "speechiness": "Presence of spoken words in the track (0-100)",
+    "liveness": "Likelihood the track was performed live (0-100)",
+}
 
+feature_icons = {
+    "bpm": "🎵", "danceability": "💃", "valence": "😊",
+    "energy": "⚡", "acousticness": "🎸", "speechiness": "🎤", "liveness": "🎭",
+}
+
+groups = [
+    ("🎵 Rhythm", ["bpm", "danceability"]),
+    ("⚡ Energy", ["energy", "acousticness", "liveness"]),
+    ("🎭 Mood", ["valence", "speechiness"]),
+]
+
+defaults = {k: v[2] for k, v in slider_configs.items() if k in feat_names}
+if "reset" not in st.session_state:
+    st.session_state.reset = False
+
+inputs = {}
+for group_label, group_feats in groups:
+    available = [f for f in group_feats if f in feat_names]
+    if not available:
+        continue
+    st.sidebar.markdown(
+        f'<div class="input-group"><div class="input-group-label">{group_label}</div>',
+        unsafe_allow_html=True,
+    )
+    for feat in available:
+        min_v, max_v, default = slider_configs[feat]
+        icon = feature_icons.get(feat, "•")
+        label = f"{icon} {feat.capitalize()}"
+        if st.session_state.reset:
+            default = defaults[feat]
+        inputs[feat] = st.sidebar.slider(
+            label, min_value=min_v, max_value=max_v, value=default,
+            help=feature_help.get(feat, ""), key=f"sp_{feat}",
+        )
+    st.sidebar.markdown("</div>", unsafe_allow_html=True)
+
+st.sidebar.markdown("---")
+
+col_a, col_b = st.sidebar.columns(2)
 predicted = False
-if st.sidebar.button("🚀 Predict Streams", type="primary", use_container_width=True):
-    predicted = True
+with col_a:
+    if st.button("🚀 Predict", type="primary", use_container_width=True):
+        predicted = True
+with col_b:
+    if st.button("↺ Reset", use_container_width=True):
+        st.session_state.reset = True
+        st.rerun()
+
+if st.session_state.reset:
+    st.session_state.reset = False
+
+st.sidebar.markdown(
+    '<div class="sidebar-info">Adjust features and click Predict</div>',
+    unsafe_allow_html=True,
+)
 
 if predicted:
     input_df = pd.DataFrame([inputs])[feat_names]

@@ -87,6 +87,32 @@ st.markdown(
         text-align: center;
         margin: 0.5rem 0;
     }
+    .input-group {
+        background: rgba(255,255,255,0.02);
+        border-radius: 12px;
+        padding: 0.75rem 0.75rem 0.25rem;
+        margin-bottom: 0.75rem;
+        border-left: 3px solid rgba(139,92,246,0.3);
+    }
+    .input-group-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #8b5cf6;
+        margin-bottom: 0.5rem;
+        padding-left: 0.25rem;
+    }
+    .sidebar-info {
+        font-size: 0.75rem;
+        color: #666;
+        text-align: center;
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .stSidebar .stSlider { padding-bottom: 0.25rem; }
+    .stSidebar label { font-size: 0.85rem !important; font-weight: 500 !important; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -136,6 +162,13 @@ feature_labels = {
     "pH": "pH", "sulphates": "Sulphates", "alcohol": "Alcohol",
 }
 
+feature_icons = {
+    "fixed acidity": "🧪", "volatile acidity": "🧪", "citric acid": "🍋",
+    "residual sugar": "🍬", "chlorides": "🧂", "free sulfur dioxide": "💨",
+    "total sulfur dioxide": "💨", "density": "⚖️", "pH": "📏",
+    "sulphates": "🧴", "alcohol": "🍾",
+}
+
 feature_ranges = {
     "fixed acidity": (4.0, 16.0, 8.5), "volatile acidity": (0.1, 1.6, 0.5),
     "citric acid": (0.0, 1.0, 0.3), "residual sugar": (0.5, 15.0, 2.5),
@@ -145,12 +178,41 @@ feature_ranges = {
     "alcohol": (8.0, 15.0, 10.5),
 }
 
-st.sidebar.markdown('<div class="sidebar-header">🧪 Wine Chemistry</div>', unsafe_allow_html=True)
+wine_groups = [
+    ("🔬 Acidity", ["fixed acidity", "volatile acidity", "citric acid", "pH"]),
+    ("🧪 Composition", ["residual sugar", "chlorides", "density", "sulphates"]),
+    ("🍇 Sulfur & Alcohol", ["free sulfur dioxide", "total sulfur dioxide", "alcohol"]),
+]
+
+feature_help = {
+    "fixed acidity": "Tartaric acid level (g/dm³) — higher = more tart",
+    "volatile acidity": "Acetic acid level — high = vinegar taste",
+    "citric acid": "Citric acid — adds freshness",
+    "residual sugar": "Remaining sugar after fermentation (g/dm³)",
+    "chlorides": "Salt content (g/dm³)",
+    "free sulfur dioxide": "Free SO₂ — prevents oxidation (mg/dm³)",
+    "total sulfur dioxide": "Total SO₂ — bound + free (mg/dm³)",
+    "density": "Wine density (g/cm³) — related to sugar/alcohol",
+    "pH": "Acidity level — lower = more acidic",
+    "sulphates": "SO₂ preservative additive (g/dm³)",
+    "alcohol": "Alcohol percentage by volume (%)",
+}
+
+if "wine_reset_key" not in st.session_state:
+    st.session_state.wine_reset_key = 0
+
+rk = st.session_state.wine_reset_key
 
 inputs = {}
-for feat in feature_cols:
-    label = feature_labels.get(feat, feat)
-    if feat in feature_ranges:
+for group_label, group_feats in wine_groups:
+    available = [f for f in group_feats if f in feature_cols]
+    if not available:
+        continue
+    st.sidebar.markdown(
+        f'<div class="input-group"><div class="input-group-label">{group_label}</div>',
+        unsafe_allow_html=True,
+    )
+    for feat in available:
         min_v, max_v, default = feature_ranges[feat]
         span = max_v - min_v
         if span <= 0.1:
@@ -162,16 +224,31 @@ for feat in feature_cols:
         else:
             step = 1.0
         fmt = f"{{:.{max(0, -int(round(np.log10(step))))}f}}"
+        icon = feature_icons.get(feat, "•")
+        label = feature_labels.get(feat, feat)
         inputs[feat] = st.sidebar.slider(
-            label, min_value=float(min_v), max_value=float(max_v),
+            f"{icon} {label}", min_value=float(min_v), max_value=float(max_v),
             value=float(default), step=float(step), format=fmt,
+            help=feature_help.get(feat, ""), key=f"w_{feat[:3]}_{rk}",
         )
-    else:
-        inputs[feat] = st.sidebar.number_input(label, value=float(df[feat].median()))
+    st.sidebar.markdown("</div>", unsafe_allow_html=True)
 
+st.sidebar.markdown("---")
+
+col_a, col_b = st.sidebar.columns(2)
 predicted = False
-if st.sidebar.button("🍷 Predict Quality", type="primary", use_container_width=True):
-    predicted = True
+with col_a:
+    if st.button("🍷 Predict", type="primary", use_container_width=True):
+        predicted = True
+with col_b:
+    if st.button("↺ Reset", use_container_width=True):
+        st.session_state.wine_reset_key += 1
+        st.rerun()
+
+st.sidebar.markdown(
+    '<div class="sidebar-info">Adjust chemistry values and click Predict</div>',
+    unsafe_allow_html=True,
+)
 
 if predicted:
     input_df = pd.DataFrame([inputs])[feature_cols]
