@@ -139,8 +139,8 @@ feature_labels = {
 feature_ranges = {
     "fixed acidity": (4.0, 16.0, 8.5), "volatile acidity": (0.1, 1.6, 0.5),
     "citric acid": (0.0, 1.0, 0.3), "residual sugar": (0.5, 15.0, 2.5),
-    "chlorides": (0.01, 0.6, 0.08), "free sulfur dioxide": (1, 70, 15),
-    "total sulfur dioxide": (5, 290, 45), "density": (0.990, 1.005, 0.997),
+    "chlorides": (0.01, 0.6, 0.08), "free sulfur dioxide": (1.0, 70.0, 15.0),
+    "total sulfur dioxide": (5.0, 290.0, 45.0), "density": (0.9900, 1.0050, 0.9960),
     "pH": (2.8, 4.0, 3.3), "sulphates": (0.3, 2.0, 0.65),
     "alcohol": (8.0, 15.0, 10.5),
 }
@@ -152,8 +152,20 @@ for feat in feature_cols:
     label = feature_labels.get(feat, feat)
     if feat in feature_ranges:
         min_v, max_v, default = feature_ranges[feat]
-        step = 0.01 if max_v - min_v < 10 else 0.1
-        inputs[feat] = st.sidebar.slider(label, min_value=min_v, max_value=max_v, value=default, step=step, format="%.2f")
+        span = max_v - min_v
+        if span <= 0.1:
+            step = 0.001
+        elif span <= 1:
+            step = 0.01
+        elif span <= 10:
+            step = 0.1
+        else:
+            step = 1.0
+        fmt = f"{{:.{max(0, -int(round(np.log10(step))))}f}}"
+        inputs[feat] = st.sidebar.slider(
+            label, min_value=float(min_v), max_value=float(max_v),
+            value=float(default), step=float(step), format=fmt,
+        )
     else:
         inputs[feat] = st.sidebar.number_input(label, value=float(df[feat].median()))
 
