@@ -172,7 +172,10 @@ def train_hr_model(df):
 
 df = load_hr_data()
 with st.spinner("👥 Training model..."):
-    model, scaler, le_dict, feature_cols, num_cols, cat_cols = train_hr_model(df)
+    model, scaler, le_dict, feature_cols, num_cols, cat_cols = train_hr_model(df.copy())
+for c in cat_cols:
+    if c in df.columns and c in le_dict:
+        df[c] = le_dict[c].transform(df[c].astype(str))
 
 if "hr_reset_key" not in st.session_state:
     st.session_state.hr_reset_key = 0
